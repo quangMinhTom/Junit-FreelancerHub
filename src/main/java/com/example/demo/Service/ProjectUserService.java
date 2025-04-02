@@ -55,22 +55,7 @@ public class ProjectUserService {
 
     @Transactional
     public void addUsersFromJobApplicationsToProject(Long projectId, Long jobId) {
-        // Lấy tất cả ứng viên cho công việc với jobId và chỉ lấy những ứng viên có status là "good"
-//        List<Application> applications = applicationRepository.findByJobIdAndStatus(jobId, "good");
-//
-//        // Kiểm tra xem có ứng viên nào có status = "good" không
-//        if (applications.isEmpty()) {
-//            throw new RuntimeException("Không có ứng viên có status 'good' cho công việc này!");
-//        }
-//
-//        // Thêm người dùng vào project_user
-//        for (Application application : applications) {
-//            ProjectUser projectUser = new ProjectUser();
-//            projectUser.setProjectId(projectId);
-//            projectUser.setUserId(application.getUserId());  // Lấy userId từ Application
-//            projectUser.setRole("freelancer");  // Ví dụ, tất cả ứng viên có status 'good' là "freelancer"
-//            projectUserRepository.save(projectUser);  // Thêm vào bảng project_user
-//        }
+
         List<Application> applications = applicationRepository.findByJobIdAndStatus(jobId, "approved");
         Optional<Job> jobs = jobRepository.findById(jobId);
         Optional<Project> project = projectRepository.findById(projectId);

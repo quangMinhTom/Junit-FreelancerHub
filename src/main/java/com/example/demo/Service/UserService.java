@@ -22,7 +22,11 @@ public class UserService {
         this.jwtService = jwtService;
     }
 
+    // Method 1: Register a new user with email uniqueness check
     public void registerUser(RegisterRequest registerRequest) {
+        if (userRepository.existsByEmail(registerRequest.getEmail())) {
+            throw new RuntimeException("Email already in use: " + registerRequest.getEmail());
+        }
         User user = new User();
         user.setEmail(registerRequest.getEmail());
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
@@ -30,31 +34,41 @@ public class UserService {
         userRepository.save(user);
     }
 
+    // Method 2: Authenticate user and return JWT token
     public String authenticateUser(LoginRequest loginRequest) {
         User user = userRepository.findByEmail(loginRequest.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            return jwtService.generateToken(user);
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + loginRequest.getEmail()));
+        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Invalid password for email: " + loginRequest.getEmail());
         }
-        throw new RuntimeException("Invalid credentials");
+        return jwtService.generateToken(user);
     }
 
+    // Method 3: Get user by email
     public User getUserByEmail(String email) {
+        if (email == null || email.trim().isEmpty()) {
+            throw new IllegalArgumentException("Email cannot be null or empty");
+        }
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
     }
-    public boolean  existsByEmail(String email) {
+
+    // Method 4: Check if user exists by email
+    public boolean existsByEmail(String email) {
+        if (email == null || email.trim().isEmpty()) {
+            return false; // Return false instead of throwing an exception for simplicity
+        }
         return userRepository.existsByEmail(email);
-//
     }
 
-
-
-//    public List<User> getAllUsers() {
-//        return userRepository.findAll();
-//    }
-//    // Lấy tất cả các user
-//    public Optional<User> getUserById(Long id) {
-//        return userRepository.findById(id);
-//    }
+    // Method 5: Update user name with basic validation
+    public void updateUserName(String email, String newName) {
+        if (newName == null || newName.trim().isEmpty()) {
+            throw new IllegalArgumentException("New name cannot be null or empty");
+        }
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+        user.setName(newName.trim());
+        userRepository.save(user);
+    }
 }
