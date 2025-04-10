@@ -47,7 +47,7 @@ public class UserServiceTest {
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             userService.registerUser(request);
         });
-        assertEquals("Email already in use: test@example.com", exception.getMessage());
+        assertEquals("Email already in use: test@example.comm", exception.getMessage());
         verify(userRepository, never()).save(any(User.class));
     }
 

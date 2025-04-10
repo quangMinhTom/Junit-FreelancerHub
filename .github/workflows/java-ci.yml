@@ -1,5 +1,7 @@
+# GitHub Actions workflow for Java CI using Maven
 name: Java CI with Maven
 
+# Triggers the workflow on push or pull request to main or master branches
 on:
   push:
     branches: [ "main", "master" ]
@@ -8,18 +10,29 @@ on:
 
 jobs:
   build:
-
+    # Runs the job on the latest Ubuntu VM
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Check out the code from the repo
       - name: Checkout source code
         uses: actions/checkout@v3
 
+      # Step 2: Set up JDK 17 with the Temurin distribution
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
 
+      # Step 3: Build and test the application using Maven
+      # `mvn -B clean verify` performs the following:
+      # - clean: Deletes previous build files (target/)
+      # - verify: Runs through the Maven lifecycle up to 'verify':
+      #     - validate: Check project structure and config
+      #     - compile: Compile the source code
+      #     - test: Run unit tests
+      #     - package: Package the compiled code (e.g. JAR/WAR)
+      #     - verify: Run integration tests, checks, etc.
       - name: Build with Maven
         run: mvn -B clean verify
