@@ -1,5 +1,5 @@
 package com.example.demo;
 
 public class f {
-    int he;
+    int he=0;
 }
